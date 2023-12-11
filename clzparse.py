@@ -8,8 +8,11 @@ import xml.etree.ElementTree as ET
 
 def system_breakdown(gamelist):
     systems = {}
+    longest_len = 0
     for i in gamelist:
         plat = i.find("platform/displayname").text
+        if len(plat) > longest_len:
+            longest_len = len(plat)
         if plat in systems:
             systems[plat] += 1
         else:
@@ -17,10 +20,10 @@ def system_breakdown(gamelist):
 
     print(f"\n>> Total number of games per system:")
     for k in systems.keys():
-        print(f"\t{k}\t\t{systems[k]}")
+        print(f"\t{k} {'.' * (longest_len + 2 - len(k))} {systems[k]}")
 
 
-def count_for_year(gamelist, year, system):
+def count_for_year(gamelist, year, flags):
     updated_list = []
 
     for i in gamelist:
@@ -31,7 +34,7 @@ def count_for_year(gamelist, year, system):
                 updated_list.append(i)
 
     print(f"\n>> Total number of games in the year {year}: {len(updated_list)}")
-    if system:
+    if flags["system"]:
         system_breakdown(updated_list)
 
 
@@ -39,8 +42,9 @@ def count_for_year(gamelist, year, system):
 @click.option('-y', '--year', type=int, default=None)
 @click.option('-c', '--count', is_flag=True, default=False)
 @click.option('-s', '--system', is_flag=True, default=None)
+@click.option('-f', '--format', default=None)
 @click.argument('filename', type=str, default=None)
-def main(year, count, system, filename):
+def main(year, count, system, format, filename):
     if filename is None:
         filename = sys.stdin
 
@@ -48,13 +52,15 @@ def main(year, count, system, filename):
     root = tree.getroot()
     gamelist = root.findall("data/gameinfo/gamelist/game")
 
+    flags = {"system": system, "format": format}
+
     if count:
         print(f"\n>> Total number of games in collection: {len(gamelist)}")
         if system:
             system_breakdown(gamelist)
 
     if year:
-        count_for_year(gamelist, year, system)
+        count_for_year(gamelist, year, flags)
 
 
 if __name__ == "__main__":
