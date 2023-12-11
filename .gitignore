@@ -1,5 +1,4 @@
 *.so
 *.swp
 *.swo
-/*.gem
-/.bundle/
+*export.xml
