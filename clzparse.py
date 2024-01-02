@@ -18,9 +18,11 @@ def system_breakdown(gamelist):
         else:
             systems[plat] = 1
 
+    sorted_keys = sorted(systems.items(), key=lambda x:x[1], reverse=True)
+
     print(f"\n>> Total number of games per system:")
-    for k in systems.keys():
-        print(f"\t{k} {'.' * (longest_len + 2 - len(k))} {systems[k]}")
+    for k in sorted_keys:
+        print(f"\t{k[0]} {'.' * (longest_len + 2 - len(k[0]))} {k[1]}")
 
 
 def count_for_year(gamelist, year, flags):
